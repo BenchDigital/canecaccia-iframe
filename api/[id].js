@@ -114,7 +114,7 @@ function generateSingleMatchHTML(match, staffByTeam) {
       html += generateTeamPlayersHTML(homeTeam, staffByTeam);
       html += generateTeamPlayersHTML(visitorsTeam, staffByTeam);
     } else {
-      const hasOvertime = homeTeam.points_ot != null;
+      const hasOvertime = homeTeam.pointsOt != null;
 
       if (hasOvertime) {
         html += `<div style="display: gap: 10px;">
