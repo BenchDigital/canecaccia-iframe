@@ -36,11 +36,11 @@ function generateTeamPlayersHTML(team, staffByTeam) {
     if (!a.hasPlayed && b.hasPlayed) return 1;
     return 0;
   });
-  console.log(players)
+  
   const playersStr = players
     .filter(p => p.is_called_up)
     .map(p => {
-      if (p.points !== null && p.points !== undefined && p.haPlayed) {
+      if (p.points !== null && p.points !== undefined && p.hasPlayed) {
         return `${p.name} ${p.lastName} ${p.points}`;
       } else if (!p.hasPlayed) {
         return `${p.name} ${p.lastName} n.e.`;
