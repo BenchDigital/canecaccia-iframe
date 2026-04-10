@@ -36,7 +36,7 @@ function generateTeamPlayersHTML(team, staffByTeam) {
     if (!a.has_played && b.has_played) return 1;
     return 0;
   });
-
+  console.log(players)
   const playersStr = players
     .filter(p => p.is_called_up)
     .map(p => {
