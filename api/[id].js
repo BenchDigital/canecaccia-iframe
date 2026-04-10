@@ -32,34 +32,34 @@ function generateTeamPlayersHTML(team, staffByTeam) {
     if (a.points !== null && b.points !== null) return b.points - a.points;
     if (a.points !== null && b.points === null) return -1;
     if (a.points === null && b.points !== null) return 1;
-    if (a.has_played && !b.has_played) return -1;
-    if (!a.has_played && b.has_played) return 1;
+    if (a.hasPlayed && !b.hasPlayed) return -1;
+    if (!a.hasPlayed && b.hasPlayed) return 1;
     return 0;
   });
   console.log(players)
   const playersStr = players
     .filter(p => p.is_called_up)
     .map(p => {
-      if (p.points !== null && p.points !== undefined && p.has_played) {
-        return `${p.name} ${p.last_name} ${p.points}`;
-      } else if (!p.has_played) {
-        return `${p.name} ${p.last_name} n.e.`;
+      if (p.points !== null && p.points !== undefined && p.haPlayed) {
+        return `${p.name} ${p.lastName} ${p.points}`;
+      } else if (!p.hasPlayed) {
+        return `${p.name} ${p.lastName} n.e.`;
       }
       return null;
     })
     .filter(Boolean)
     .join(', ');
 
-  const staff = staffByTeam[team.team_id] || [];
+  const staff = staffByTeam[team.teamId] || [];
   const allenatori = staff
-    .filter(s => s.role_name && (s.role_name.includes('Allenatore') || s.role_name.includes('Coach')))
-    .map(s => `${s.name} ${s.last_name}`);
+    .filter(s => s.roleName && (s.roleName.includes('Allenatore') || s.roleName.includes('Coach')))
+    .map(s => `${s.name} ${s.lastName}`);
   const assistenti = staff
-    .filter(s => s.role_name && (s.role_name.includes('Assistente') || s.role_name.includes('Vice Coach') || s.role_name.includes('Vice Allenatore')))
-    .map(s => `${s.name} ${s.last_name}`);
+    .filter(s => s.roleName && (s.roleName.includes('Assistente') || s.roleName.includes('Vice Coach') || s.roleName.includes('Vice Allenatore')))
+    .map(s => `${s.name} ${s.lastName}`);
 
   let html = `<div style="display: gap: 10px;">
-  <span class="team" style="white-space: nowrap;">${team.team_name}:</span>
+  <span class="team" style="white-space: nowrap;">${team.teamName}:</span>
   <span>
     <span>${playersStr || ''}</span>\n`;
 
@@ -70,10 +70,10 @@ function generateTeamPlayersHTML(team, staffByTeam) {
 }
 
 function generateSingleMatchHTML(match, staffByTeam) {
-  const homeTeam = match.home_team;
-  const visitorsTeam = match.visitors_team;
-  const homeScores = [homeTeam.points_q1, homeTeam.points_q2, homeTeam.points_q3, homeTeam.points_q4];
-  const visitorsScores = [visitorsTeam.points_q1, visitorsTeam.points_q2, visitorsTeam.points_q3, visitorsTeam.points_q4];
+  const homeTeam = match.homeTeam;
+  const visitorsTeam = match.visitorsTeam;
+  const homeScores = [homeTeam.pointsQ1, homeTeam.pointsQ2, homeTeam.pointsQ3, homeTeam.pointsQ4];
+  const visitorsScores = [visitorsTeam.pointsQ1, visitorsTeam.pointsQ2, visitorsTeam.pointsQ3, visitorsTeam.pointsQ4];
 
   const matchDate = match.date ? new Date(match.date).toLocaleDateString('it-IT') : '';
   const matchTime = match.date ? new Date(match.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '';
@@ -83,11 +83,11 @@ function generateSingleMatchHTML(match, staffByTeam) {
 
   if (allHomeScoresNull) {
     html += `<div>
-  <span class="match">${homeTeam.team_name} - ${visitorsTeam.team_name}</span>
+  <span class="match">${homeTeam.teamName} - ${visitorsTeam.teamName}</span>
   <span>&nbsp;&nbsp;&nbsp;&nbsp;0 - 0&nbsp;&nbsp;&nbsp;${matchDate}&nbsp;${matchTime}</span>
 </div>
-<div class="team">${homeTeam.team_name}:</div>
-<div class="team">${visitorsTeam.team_name}:</div>
+<div class="team">${homeTeam.teamName}:</div>
+<div class="team">${visitorsTeam.teamName}:</div>
 <br>\n`;
   } else {
     const someScoresNull = homeScores.some(score => score === null || score === undefined);
@@ -108,7 +108,7 @@ function generateSingleMatchHTML(match, staffByTeam) {
       }
 
       html += `<div>
-  <span class="match">${homeTeam.team_name} - ${visitorsTeam.team_name} ${lastQuarterHome}-${lastQuarterVisitors}</span>
+  <span class="match">${homeTeam.teamName} - ${visitorsTeam.teamName} ${lastQuarterHome}-${lastQuarterVisitors}</span>
   <span>Parziali ${parzialiArray.join(', ')}</span>
 </div>\n`;
       html += generateTeamPlayersHTML(homeTeam, staffByTeam);
@@ -118,12 +118,12 @@ function generateSingleMatchHTML(match, staffByTeam) {
 
       if (hasOvertime) {
         html += `<div style="display: gap: 10px;">
-  <span class="match">${homeTeam.team_name} - ${visitorsTeam.team_name} ${homeTeam.points_ot}-${visitorsTeam.points_ot}</span>
+  <span class="match">${homeTeam.teamName} - ${visitorsTeam.teamName} ${homeTeam.pointsOt}-${visitorsTeam.pointsOt}</span>
   <span>Parziali ${homeScores[0]}-${visitorsScores[0]}, ${homeScores[1]}-${visitorsScores[1]}, ${homeScores[2]}-${visitorsScores[2]}, ${homeScores[3]}-${visitorsScores[3]}, D1ts</span>
 </div>\n`;
       } else {
         html += `<div style="display: gap: 10px;">
-  <span class="match">${homeTeam.team_name} - ${visitorsTeam.team_name} ${homeScores[3]}-${visitorsScores[3]}</span>
+  <span class="match">${homeTeam.teamName} - ${visitorsTeam.teamName} ${homeScores[3]}-${visitorsScores[3]}</span>
   <span>Parziali ${homeScores[0]}-${visitorsScores[0]}, ${homeScores[1]}-${visitorsScores[1]}, ${homeScores[2]}-${visitorsScores[2]}</span>
 </div>\n`;
       }
