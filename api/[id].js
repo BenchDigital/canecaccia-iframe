@@ -38,7 +38,7 @@ function generateTeamPlayersHTML(team, staffByTeam) {
   });
   
   const playersStr = players
-    .filter(p => p.is_called_up)
+    .filter(p => p.isCalledUp)
     .map(p => {
       if (p.points !== null && p.points !== undefined && p.hasPlayed) {
         return `${p.name} ${p.lastName} ${p.points}`;
