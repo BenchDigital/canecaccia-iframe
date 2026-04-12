@@ -49,7 +49,7 @@ function generateTeamPlayersHTML(team, staffByTeam) {
     })
     .filter(Boolean)
     .join(', ');
-
+    
   const staff = staffByTeam[team.teamId] || [];
   const allenatori = staff
     .filter(s => s.roleName && (s.roleName.includes('Allenatore') || s.roleName.includes('Coach')))
@@ -62,10 +62,12 @@ function generateTeamPlayersHTML(team, staffByTeam) {
   <span class="team" style="white-space: nowrap;">${team.teamName}:</span>
   <span>
     <span>${playersStr || ''}</span>\n`;
+  
 
+  if (playersStr) {
   if (allenatori.length > 0) html += `    <span>All. ${allenatori.join(' - ')}</span>\n`;
   if (assistenti.length > 0) html += `    <span>Ass. ${assistenti.join(' - ')}</span>\n`;
-
+  }
   return html + `  </span>\n</div>\n`;
 }
 
