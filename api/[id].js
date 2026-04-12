@@ -182,6 +182,62 @@ function generateMatchHTML(groupedByDay, staffByTeam, midGiornata) {
   return html + htmlEnd;
 }
 
+function generatePostSeasonHTML(competitionData, competitionId) {
+  const { competitionName, groupedByDay, staffByTeam } = competitionData;
+
+  const htmlStart = `<span class="highlight">${competitionName}</span><br><br>\n`;
+
+  const today = new Date();
+  let currentDay = Math.max(...Object.keys(groupedByDay).map(Number));
+
+  for (const day of Object.keys(groupedByDay).sort((a, b) => Number(a) - Number(b))) {
+    const matches = groupedByDay[day];
+    if (matches.some(m => m.date && isSameISOWeek(new Date(m.date), today))) {
+      currentDay = Number(day);
+    }
+  }
+
+  const matches = groupedByDay[currentDay];
+  if (!matches?.length) {
+    return htmlStart + `<p>Nessuna partita trovata</p><br>\n`;
+  }
+
+  let html = htmlStart;
+  html += `<span>Gara ${currentDay}</span><br><br>\n`;
+  matches.forEach(match => { html += generateSingleMatchHTML(match, staffByTeam); });
+
+  return html;
+}
+
+// // Vercel Serverless Function
+// export default async function handler(req, res) {
+//   const { id } = req.query;
+
+//   if (!id) {
+//     return res.status(400).send('Missing id parameter');
+//   }
+
+//   try {
+//     const response = await fetch(`https://bench-qunt.onrender.com/iframe/${id}`);
+    
+//     if (!response.ok) {
+//       return res.status(response.status).send('Error fetching data');
+//     }
+
+//     const data = await response.json();
+//     const { groupedByDay, staffByTeam, midGiornata } = data;
+
+//     const html = generateMatchHTML(groupedByDay, staffByTeam, midGiornata);
+
+//     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.status(200).send(html);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// }
+
 // Vercel Serverless Function
 export default async function handler(req, res) {
   const { id } = req.query;
@@ -192,15 +248,53 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(`https://bench-qunt.onrender.com/iframe/${id}`);
-    
+    //const response = await fetch(`http://localhost:3000/iframe/${id}`);
+
     if (!response.ok) {
       return res.status(response.status).send('Error fetching data');
     }
 
     const data = await response.json();
-    const { groupedByDay, staffByTeam, midGiornata } = data;
+    const ids = String(id).split(',');
+    const isPostSeason = ids.length > 1;
 
-    const html = generateMatchHTML(groupedByDay, staffByTeam, midGiornata);
+    const htmlWrapper = `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partite</title>
+    <style>
+        body { font-size: 13px; font-family: Tahoma, sans-serif; color: #212121; margin: 10px; background-color: #FFFFFF; }
+        .highlight { background-color: #FFFF99; }
+        .match { font-weight: bold; }
+        .team { text-decoration: underline; }
+        .separator { width: 100%; height: 2px; background: url('./images/stringa2.png') no-repeat center; }
+    </style>
+</head>
+<body>`;
+
+    let bodyHtml = '';
+
+    if (isPostSeason) {
+      // data è { [competitionId]: { competitionName, groupedByDay, staffByTeam, midGiornata } }
+      for (const competitionId of ids) {
+        const competitionData = data[competitionId];
+        if (competitionData) {
+          bodyHtml += generatePostSeasonHTML(competitionData, competitionId);
+          bodyHtml += `<div class="separator"></div>\n`;
+        }
+      }
+    } else {
+      const { groupedByDay, staffByTeam, midGiornata } = data;
+      bodyHtml = generateMatchHTML(groupedByDay, staffByTeam, midGiornata)
+        .replace(/<!DOCTYPE html>[\s\S]*?<body>/, '')
+        .replace(/<\/body><\/html>/, '');
+    }
+
+    const html = isPostSeason
+      ? htmlWrapper + bodyHtml + `</body></html>`
+      : generateMatchHTML(data.groupedByDay, data.staffByTeam, data.midGiornata);
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Access-Control-Allow-Origin', '*');
