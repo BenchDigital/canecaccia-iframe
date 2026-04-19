@@ -77,8 +77,20 @@ function generateSingleMatchHTML(match, staffByTeam) {
   const homeScores = [homeTeam.pointsQ1, homeTeam.pointsQ2, homeTeam.pointsQ3, homeTeam.pointsQ4];
   const visitorsScores = [visitorsTeam.pointsQ1, visitorsTeam.pointsQ2, visitorsTeam.pointsQ3, visitorsTeam.pointsQ4];
 
-  const matchDate = match.date ? new Date(match.date).toLocaleDateString('it-IT') : '';
-  const matchTime = match.date ? new Date(match.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '';
+  // const matchDate = match.date ? new Date(match.date).toLocaleDateString('it-IT') : '';
+  // const matchTime = match.date ? new Date(match.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '';
+
+  const matchDate = match.date
+  ? new Date(match.date).toLocaleDateString('it-IT', { timeZone: 'UTC' })
+  : '';
+
+const matchTime = match.date
+  ? new Date(match.date).toLocaleTimeString('it-IT', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC'  // ← aggiunto
+    })
+  : '';
 
   let html = '';
   const allHomeScoresNull = homeScores.every(score => score === null || score === undefined);
