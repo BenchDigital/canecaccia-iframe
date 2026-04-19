@@ -81,14 +81,14 @@ function generateSingleMatchHTML(match, staffByTeam) {
   // const matchTime = match.date ? new Date(match.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '';
 
   const matchDate = match.date
-  ? new Date(match.date).toLocaleDateString('it-IT', { timeZone: 'UTC' })
+  ? new Date(match.date).toLocaleDateString('it-IT', { timeZone: 'Europe/Rome' })
   : '';
 
 const matchTime = match.date
   ? new Date(match.date).toLocaleTimeString('it-IT', {
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: 'UTC'  // ← aggiunto
+      timeZone: 'Europe/Rome'  // ← aggiunto
     })
   : '';
 
